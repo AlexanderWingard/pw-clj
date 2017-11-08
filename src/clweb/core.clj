@@ -4,15 +4,30 @@
             [compojure.core :refer [defroutes GET]]
             [compojure.handler :refer [site]]
             [compojure.route :refer [not-found resources]]
+            [clweb.io :refer [ws-send]]
             [org.httpkit.server
              :refer
              [on-close on-receive run-server with-channel]]
             [ring.middleware.cljsjs :refer [wrap-cljsjs]]
             [ring.util.response :refer [resource-response]]))
 
+(defn broadcast [s]
+  (doseq [channel (keys (:clients s))]
+    (ws-send channel s)))
+
+(defn watched-state []
+  (let [state (atom {})]
+    (add-watch state :state-watcher
+               (fn [key atom old new]
+                 (broadcast new)))
+    state))
+
+(defonce state (watched-state))
+
 (defn ws-handler [req]
   (with-channel req channel
-    (on-close channel (fn [status] ))
+    (swap! state assoc-in [:clients channel] {})
+    (on-close channel (fn [status] (swap! state update-in [:clients] dissoc channel)))
     (on-receive channel (fn [string] ))))
 
 (defroutes my-routes

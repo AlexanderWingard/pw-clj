@@ -18,10 +18,11 @@
         protocol (-> location .-protocol (case "http:" "ws:" "https:" "wss:"))]
     (str protocol "//" host "/ws")))
 (defonce channel (js/WebSocket. ws-uri))
+(defonce state (atom {:server-state nil}))
 
 
 (defn ws-on-message [ws-event]
-  (println (reader/read-string (.-data  ws-event))))
+  (swap! state assoc-in [:server-state] (reader/read-string (.-data  ws-event))))
 
 (defn ws-open [] ())
 (aset channel "onmessage" ws-on-message)
@@ -32,7 +33,7 @@
 (hash-change)
 
 (defn app []
-  [:div "Hello world"])
+  [:div (pr-str @state)])
 
 (reagent/render [app] (js/document.getElementById "app"))
 
