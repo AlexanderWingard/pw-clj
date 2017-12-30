@@ -3,6 +3,7 @@
                  [cljsjs/d3 "4.3.0-4"]
                  [cljsjs/semantic-ui "2.2.4-0"]
                  [com.cemerick/piggieback "0.2.1"]
+                 [com.rpl/specter "1.0.5"]
                  [compojure "1.5.0"]
                  [figwheel-sidecar "0.5.11"]
                  [http-kit "2.1.19"]
