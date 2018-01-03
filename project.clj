@@ -6,6 +6,7 @@
                  [com.rpl/specter "1.0.5"]
                  [compojure "1.5.0"]
                  [figwheel-sidecar "0.5.11"]
+                 [binaryage/devtools "0.9.8"]
                  [http-kit "2.1.19"]
                  [json-html "0.4.4"]
                  [org.clojure/clojure "1.8.0"]
@@ -40,6 +41,7 @@
                                    }
                         :compiler {:main clweb.core
                                    :asset-path "js/out"
+                                   :preloads [devtools.preload]
                                    :output-to "resources/public/js/script.js"
                                    :output-dir "resources/public/js/out"}}
                        {:id "min"
