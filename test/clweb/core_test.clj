@@ -1,6 +1,7 @@
 (ns clweb.core-test
   (:require
    [clweb.core :as clweb]
+   [clweb.location-hash :as hash]
    [clweb.util :as util]
    [com.rpl.specter :as s]
    [clojure.test :refer :all]))
@@ -37,16 +38,5 @@
   (testing "hashification")
   (let [s "#page/test/apa/bepa"
         m {"page" "test" "apa" "bepa"}]
-    (is (= s (util/hashify m)))
-    (is (= m (util/unhashify s)))))
-
-
-(deftest registration-test
-  (testing "faulty registration"
-    (let [fe-state {:registration-form
-                    {:username {:value "test"}
-                     :password-1 {:value "pass"}}}
-          expected-pass {:registration-form {:password-2 {:error nil}}}
-          expected-fail {:registration-form {:password-2 {:error "Passwords don't match"}}}]
-      (is (= expected-pass (clweb/validate-registration (assoc-in fe-state [:registration-form :password-2 :value] "pass"))))
-      (is (= expected-fail (clweb/validate-registration (assoc-in fe-state [:registration-form :password-2 :value] "fail")))))))
+    (is (= s (hash/hashify m)))
+    (is (= m (hash/unhashify s)))))

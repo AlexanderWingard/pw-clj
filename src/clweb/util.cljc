@@ -22,3 +22,6 @@
               v2))]
     (when (some identity vs)
       (reduce #(rec-merge %1 %2) v vs))))
+
+(defn action [state channel a]
+  (ws-send channel (assoc @state :action a)))

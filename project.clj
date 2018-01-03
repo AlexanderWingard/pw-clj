@@ -19,7 +19,7 @@
                  ]
   :plugins [
             [com.jakemccrary/lein-test-refresh "0.20.0"]
-            [lein-cljsbuild "1.1.3"]
+            [lein-cljsbuild "1.1.7"]
             [lein-cloverage "1.0.9"]
             [lein-figwheel "0.5.11"]
             [venantius/ultra "0.5.1"]
