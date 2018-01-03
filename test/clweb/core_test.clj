@@ -20,7 +20,6 @@
                               data)]
       (is (= actual expected)))))
 
-
 (deftest deep-merge-test
   (testing "a deep merge"
     (let [a {:a {:b 10
@@ -33,6 +32,13 @@
                         :d 30}
                     :x "y"}]
       (is (= expected (util/deep-merge a b) )))))
+
+(deftest hashify-test
+  (testing "hashification")
+  (let [s "#page/test/apa/bepa"
+        m {"page" "test" "apa" "bepa"}]
+    (is (= s (util/hashify m)))
+    (is (= m (util/unhashify s)))))
 
 
 (deftest registration-test

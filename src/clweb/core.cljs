@@ -13,6 +13,9 @@
 
 (register-tag-parser! "object" (fn [arg] (prn-str arg)))
 
+(defn log [arg]
+  (js/console.log arg))
+
 (def ws-uri
   (let [location (-> js/window .-location)
         host (-> location .-host)
@@ -20,6 +23,16 @@
     (str protocol "//" host "/ws")))
 (defonce channel (js/WebSocket. ws-uri))
 (defonce state (atom {}))
+
+(defn hashify [m]
+  (str "#" (str/join "/" (map #(str/join "/" %) (into [] m)))))
+
+(defn unhashify [s]
+  (apply hash-map (filter #(not= "" %) (str/split (subs s 1) #"/"))))
+
+(add-watch state :state-watcher
+           (fn [key atom old new]
+             (aset js/window "location" "hash" (hashify (:hash new)))))
 
 (defn register []
   (util/ws-send channel (assoc @state :action "register")))
@@ -32,7 +45,7 @@
 (aset channel "onopen" ws-open)
 
 (defn hash-change []
-  (swap! state assoc-in [:hash] (apply hash-map (str/split (subs (.-hash (.-location js/window)) 1) #"/"))))
+ (swap! state assoc :hash (unhashify (aget js/window "location" "hash"))))
 (aset js/window "onhashchange" hash-change)
 (hash-change)
 
@@ -46,20 +59,21 @@
 (defn app []
   [:div.ui.container
    (case (get-in @state [:hash "page"])
-     "register" [:div.ui.segment
-                 [:div.ui.form
-                  (field :text "Username" state [:registration-form :username])
-                  (field :password "Password" state [:registration-form :password-1])
-                  (field :password "Repeat" state [:registration-form :password-2])
-                  [:div {:style {:text-align "center"}}
-                   [:button.ui.button {:on-click register} "Register"]
-                   [:br]
-                   [:a {:href "#"} "Back"]]
-                  ]]
+     "register" ^{:key "register"}
      [:div.ui.segment
       [:div.ui.form
-       (field :text "Username" state [:login-form :username])
-       (field :password "Password" state [:login-form :password])
+       [field :text "Username" state [:registration-form :username]]
+       [field :password "Password" state [:registration-form :password-1]]
+       [field :password "Repeat" state [:registration-form :password-2]]
+       [:div {:style {:text-align "center"}}
+        [:button.ui.button {:on-click register} "Register"]
+        [:br]
+        [:a {:href "#"} "Back"]]
+       ]]
+      ^{:key "main"} [:div.ui.segment
+      [:div.ui.form
+       [field :text "Username" state [:login-form :username]]
+       [field :password "Password" state [:login-form :password]]
        [:div {:style {:text-align "center"}}
         [:button.ui.button "Login"]
         [:br]

@@ -21,17 +21,23 @@
   (let [state (atom {})]
     (add-watch state :state-watcher
                (fn [key atom old new]
-                 (broadcast new)))
+                 nil
+                 ;; (broadcast new)
+                 ))
     state))
 
 (defonce state (watched-state))
 
 (defn validate-registration [state]
   (-> {}
+      (assoc-in [:registration-form :username :error]
+                (when (> 3 (count (get-in state [:registration-form :username :value])))
+                  "Username too short"))
       (assoc-in [:registration-form :password-2 :error]
                 (when (not= (get-in state [:registration-form :password-1 :value])
                             (get-in state [:registration-form :password-2 :value]))
-                  "Passwords don't match"))))
+                  "Passwords don't match"))
+      (assoc-in [:login-form :username :value] (get-in state [:registration-form :username :value]))))
 
 (defn ws-on-message [channel msg]
   (case (:action msg)
