@@ -1,5 +1,7 @@
 (ns clweb.form-util
-  #?(:cljs (:require [reagent-forms.core :refer [bind-fields]])))
+  (:require
+  [com.rpl.specter :as s]
+   #?(:cljs [reagent-forms.core :refer [bind-fields]])))
 
 #?(:clj
    (def bind-fields 'bind-fields))
@@ -10,3 +12,8 @@
      [:label label]
      [bind-fields [:input {:field type :id (conj path :value)}] state]
      (when (some? error) [:div.ui.pointing.red.basic.label error])]))
+
+(defn errors [validation]
+  (filter
+   #(not (nil? %))
+   (s/select [s/ALL s/LAST s/MAP-VALS :error] validation)))

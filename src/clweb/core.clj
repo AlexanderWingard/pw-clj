@@ -3,28 +3,22 @@
   (:require [clojure.edn :as edn]
             [compojure.core :refer [defroutes GET]]
             [compojure.handler :refer [site]]
-            [com.rpl.specter :as s]
             [compojure.route :refer [not-found resources]]
-            [clweb.util :refer [ws-send]]
+            [clweb.backend-state :as bes]
             [clweb.components.registration :as registration]
-            [org.httpkit.server
-             :refer
-             [on-close on-receive run-server with-channel]]
+            [org.httpkit.server :refer [on-close on-receive run-server with-channel]]
             [ring.middleware.cljsjs :refer [wrap-cljsjs]]
-            [ring.util.response :refer [resource-response]]
-            ))
-
-(defonce state (atom {}))
+            [ring.util.response :refer [resource-response]]))
 
 (defn ws-on-message [channel msg]
   (case (:action msg)
-    "register" (ws-send channel (registration/validate msg))
+    "register" (registration/register-action channel msg)
     (println msg)))
 
 (defn ws-handler [req]
   (with-channel req channel
-    (swap! state assoc-in [:clients channel] {})
-    (on-close channel (fn [status] (swap! state update-in [:clients] dissoc channel)))
+    (bes/assoc-channel channel)
+    (on-close channel (fn [status] (bes/dissoc-channel channel)))
     (on-receive channel (fn [s] (ws-on-message channel (edn/read-string s))))))
 
 (defroutes my-routes

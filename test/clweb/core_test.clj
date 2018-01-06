@@ -2,6 +2,8 @@
   (:require
    [clweb.core :as clweb]
    [clweb.location-hash :as hash]
+   [clweb.components.registration :as registration]
+   [clweb.form-util :as form-util]
    [clweb.util :as util]
    [com.rpl.specter :as s]
    [clojure.test :refer :all]))
@@ -12,14 +14,8 @@
                 :password-2 {:value "bepa"}}
           expected {:password-1 {:value "apa"}
                     :password-2 {:value "bepa" :error "Passwords don't match"}}
-          actual (s/transform [(s/collect-one :password-1 :value)
-                               (s/collect-one :password-2 :value)
-                               :password-2]
-                              (fn [pw1 pw2 x]
-                                (conj x (when (not= pw1 pw2)
-                                          [:error "Passwords don't match"])))
-                              data)]
-      (is (= actual expected)))))
+          result (registration/validate data)]
+      (is (= true (form-util/errors result))))))
 
 (deftest deep-merge-test
   (testing "a deep merge"
