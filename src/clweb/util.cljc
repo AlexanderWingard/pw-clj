@@ -23,5 +23,17 @@
     (when (some identity vs)
       (reduce #(rec-merge %1 %2) v vs))))
 
+(defn keys-in [m]
+  (if (map? m)
+    (vec
+     (mapcat (fn [[k v]]
+               (let [sub (keys-in v)
+                     nested (map #(into [k] %) (filter (comp not empty?) sub))]
+                 (if (seq nested)
+                   nested
+                   [[k]])))
+             m))
+    []))
+
 (defn action [state channel a]
   (ws-send channel (assoc @state :action a)))

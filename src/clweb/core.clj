@@ -18,6 +18,7 @@
 (defn ws-handler [req]
   (with-channel req channel
     (bes/assoc-channel channel)
+    (bes/add-subscription channel)
     (on-close channel (fn [status] (bes/dissoc-channel channel)))
     (on-receive channel (fn [s] (ws-on-message channel (edn/read-string s))))))
 
