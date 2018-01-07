@@ -4,6 +4,7 @@
             [compojure.core :refer [defroutes GET]]
             [compojure.handler :refer [site]]
             [compojure.route :refer [not-found resources]]
+            [clweb.util :refer [ws-send]]
             [clweb.backend-state :as bes]
             [clweb.components.registration :as registration]
             [clweb.components.login :as login]
@@ -12,10 +13,12 @@
             [ring.util.response :refer [resource-response]]))
 
 (defn ws-on-message [channel msg]
-  (case (:action msg)
-    "register" (registration/register-action channel msg)
-    "login" (login/login-action channel msg)
-    (println msg)))
+  (ws-send
+   channel
+   (case (:action msg)
+     "register" (registration/register-action channel msg)
+     "login" (login/login-action channel msg)
+     {})))
 
 (defn ws-handler [req]
   (with-channel req channel

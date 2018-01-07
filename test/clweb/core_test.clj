@@ -8,15 +8,6 @@
    [com.rpl.specter :as s]
    [clojure.test :refer :all]))
 
-(deftest validation-test
-  (testing "Passwords match"
-    (let [data {:password-1 {:value "apa"}
-                :password-2 {:value "bepa"}}
-          expected {:password-1 {:value "apa"}
-                    :password-2 {:value "bepa" :error "Passwords don't match"}}
-          result (registration/validate data)]
-      (is (= true (form-util/errors result))))))
-
 (deftest deep-merge-test
   (testing "a deep merge"
     (let [a {:a {:b 10

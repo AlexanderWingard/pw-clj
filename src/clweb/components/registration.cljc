@@ -1,7 +1,6 @@
 (ns clweb.components.registration
   (:require
    [clweb.form-util :as fu :refer [field]]
-   [clweb.util :refer [ws-send]]
    [clweb.util :refer [action]]
    [clweb.backend-state :as bes]))
 
@@ -21,13 +20,12 @@
 (defn register-action [channel msg]
   (let [errors (validate msg)]
     (if (= 0 (count (fu/errors errors)))
-      (do
-        (let [uid (bes/register-user
-                   channel
-                   (get-in msg [:registration-form :username :value])
-                   (get-in msg [:registration-form :password-1 :value]))]
-          (ws-send channel {:hash nil :registration-form nil :logged-in uid})))
-      (ws-send channel errors))))
+      (let [uid (bes/register-user
+                 channel
+                 (get-in msg [:registration-form :username :value])
+                 (get-in msg [:registration-form :password-1 :value]))]
+        {:hash nil :registration-form nil :logged-in uid})
+      errors)))
 
 (defn form [state channel]
   ^{:key "register"}
