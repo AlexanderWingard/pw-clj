@@ -26,6 +26,9 @@
            assoc-in [:sessions channel :user] uid)
     uid))
 
+(defn logout [state channel]
+  (swap! state update-in [:sessions channel] dissoc :user))
+
 (defn get-user-by-name [state username]
   (s/select-one [:users
                  s/ALL

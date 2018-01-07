@@ -1,6 +1,6 @@
 (ns clweb.components.login
   (:require
-   [clweb.form-util :refer [field]]
+   [clweb.form-util :as fu :refer [field]]
    [clweb.backend-state :as bes]
    [clweb.util :refer [action]]))
 
@@ -11,11 +11,15 @@
       (assoc-in [:login-form :password :error]
                 (when (and (some? user)
                            (not= (get-in msg [:login-form :password :value])
-                                 (get (last user) :password)))
+                                 (:password user)))
                   "Wrong password"))))
 
 (defn login-action [state channel msg]
-  (validate msg (bes/get-user-by-name state (get-in msg [:login-form :username :value]))))
+  (let [[uid user] (bes/get-user-by-name state (get-in msg [:login-form :username :value]))
+        errors (validate msg user)]
+    (if (= 0 (count (fu/errors errors)))
+      {:logged-in uid :login-form nil}
+      errors)))
 
 (defn form [state channel]
   ^{:key "main"}

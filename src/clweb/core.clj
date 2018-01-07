@@ -10,7 +10,8 @@
             [clweb.components.login :as login]
             [org.httpkit.server :refer [on-close on-receive run-server with-channel]]
             [ring.middleware.cljsjs :refer [wrap-cljsjs]]
-            [ring.util.response :refer [resource-response]]))
+            [ring.util.response :refer [resource-response]]
+            [clweb.components.user-info :as user-info]))
 
 (defonce state (atom {}))
 (add-watch state :state-watcher (fn [_key _atom old new]
@@ -23,7 +24,8 @@
    channel
    (case (:action msg)
      "register" (registration/register-action state channel msg)
-     "login" (login/login-action  state channel msg)
+     "login" (login/login-action state channel msg)
+     "logout" (user-info/logout-action state channel msg)
      {})))
 
 (defn ws-handler [req]
