@@ -6,6 +6,7 @@
             [compojure.route :refer [not-found resources]]
             [clweb.backend-state :as bes]
             [clweb.components.registration :as registration]
+            [clweb.components.login :as login]
             [org.httpkit.server :refer [on-close on-receive run-server with-channel]]
             [ring.middleware.cljsjs :refer [wrap-cljsjs]]
             [ring.util.response :refer [resource-response]]))
@@ -13,6 +14,7 @@
 (defn ws-on-message [channel msg]
   (case (:action msg)
     "register" (registration/register-action channel msg)
+    "login" (login/login-action channel msg)
     (println msg)))
 
 (defn ws-handler [req]

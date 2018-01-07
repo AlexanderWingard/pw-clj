@@ -38,6 +38,14 @@
            assoc-in [channel :user] uid)
     uid))
 
+(defn get-user-by-name [username]
+  (s/select-one [:users
+                 s/ALL
+                 (s/collect-one s/FIRST)
+                 s/LAST
+                 #(= username (:username %))]
+                @state))
+
 (defn add-subscription [channel]
   (swap! sessions assoc-in [channel :subscriptions] true))
 
