@@ -17,10 +17,11 @@
                             (get-in state [:registration-form :password-2 :value]))
                   "Passwords don't match"))))
 
-(defn register-action [channel msg]
+(defn register-action [state channel msg]
   (let [errors (validate msg)]
     (if (= 0 (count (fu/errors errors)))
       (let [uid (bes/register-user
+                 state
                  channel
                  (get-in msg [:registration-form :username :value])
                  (get-in msg [:registration-form :password-1 :value]))]

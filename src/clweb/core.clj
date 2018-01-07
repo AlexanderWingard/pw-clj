@@ -12,19 +12,25 @@
             [ring.middleware.cljsjs :refer [wrap-cljsjs]]
             [ring.util.response :refer [resource-response]]))
 
+(defonce state (atom {}))
+(add-watch state :state-watcher (fn [_key _atom old new]
+                                  (doseq [[chan _] (bes/get-subscriptions new)]
+                                    (ws-send chan {:state nil})
+                                    (ws-send chan {:state new}))))
+
 (defn ws-on-message [channel msg]
   (ws-send
    channel
    (case (:action msg)
-     "register" (registration/register-action channel msg)
-     "login" (login/login-action channel msg)
+     "register" (registration/register-action state channel msg)
+     "login" (login/login-action  state channel msg)
      {})))
 
 (defn ws-handler [req]
   (with-channel req channel
-    (bes/assoc-channel channel)
-    (bes/add-subscription channel)
-    (on-close channel (fn [status] (bes/dissoc-channel channel)))
+    (bes/assoc-channel state channel)
+    (bes/add-subscription state channel)
+    (on-close channel (fn [status] (bes/dissoc-channel state channel)))
     (on-receive channel (fn [s] (ws-on-message channel (edn/read-string s))))))
 
 (defroutes my-routes

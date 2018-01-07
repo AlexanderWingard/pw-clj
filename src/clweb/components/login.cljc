@@ -14,8 +14,8 @@
                                  (get (last user) :password)))
                   "Wrong password"))))
 
-(defn login-action [channel msg]
-  (validate msg (bes/get-user-by-name (get-in msg [:login-form :username :value]))))
+(defn login-action [state channel msg]
+  (validate msg (bes/get-user-by-name state (get-in msg [:login-form :username :value]))))
 
 (defn form [state channel]
   ^{:key "main"}
