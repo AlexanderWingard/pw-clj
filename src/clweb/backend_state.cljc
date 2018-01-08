@@ -18,16 +18,19 @@
        (ws-send chan {:state nil})
        (ws-send chan {:state new})))))
 
+(defn login [state channel uid]
+  (swap! state
+         assoc-in [:sessions channel :user] uid))
+
+(defn logout [state channel]
+  (swap! state update-in [:sessions channel] dissoc :user))
+
 (defn register-user [state channel username password]
   (let [uid username]
     (swap! state update-in [:users]
            assoc uid {:username username :password password})
-    (swap! state
-           assoc-in [:sessions channel :user] uid)
+    (login state channel uid)
     uid))
-
-(defn logout [state channel]
-  (swap! state update-in [:sessions channel] dissoc :user))
 
 (defn get-user-by-name [state username]
   (s/select-one [:users

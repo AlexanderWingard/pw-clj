@@ -18,7 +18,9 @@
   (let [[uid user] (bes/get-user-by-name state (get-in msg [:login-form :username :value]))
         errors (validate msg user)]
     (if (= 0 (count (fu/errors errors)))
-      {:logged-in uid :login-form nil}
+      (do
+        (bes/login state channel uid)
+        {:logged-in uid :login-form nil})
       errors)))
 
 (defn form [state channel]
