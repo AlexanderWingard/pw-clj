@@ -52,6 +52,13 @@
              (s/pred= true)]
             state))
 
+(defn get-user-sessions [state uid]
+  (s/select [:sessions
+             s/ALL
+             (s/selected? [s/LAST :user (s/pred= uid)])
+             s/FIRST]
+            @state))
+
 (defn assoc-channel [state channel]
   (swap! state assoc-in [:sessions channel] {}))
 
