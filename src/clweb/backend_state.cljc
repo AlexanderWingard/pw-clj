@@ -3,21 +3,6 @@
             [clojure.data :refer [diff]]
             [com.rpl.specter :as s]))
 
-(defn setup-watcher [state]
-  (add-watch
-   state :state-watcher
-   (fn [_key _atom old new]
-     (doseq [[chan _]
-             (s/select [:sessions
-                        s/ALL
-                        (s/collect-one s/FIRST)
-                        s/LAST
-                        :subscriptions
-                        (s/pred= true)]
-                       new)]
-       (ws-send chan {:state nil})
-       (ws-send chan {:state new})))))
-
 (defn login [state channel uid]
   (swap! state
          assoc-in [:sessions channel :user] uid))
