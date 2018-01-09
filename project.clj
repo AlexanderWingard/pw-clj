@@ -19,7 +19,10 @@
                  ]
   :plugins [
             [com.jakemccrary/lein-test-refresh "0.20.0"]
+            [jonase/eastwood "0.2.5"]
             [lein-cljsbuild "1.1.7"]
+            [lein-kibit "0.1.5"]
+            [lein-ancient "0.6.15"]
             [lein-cloverage "1.0.9"]
             [lein-figwheel "0.5.11"]
             [venantius/ultra "0.5.1"]
