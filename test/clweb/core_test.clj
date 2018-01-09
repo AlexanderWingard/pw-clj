@@ -6,7 +6,8 @@
    [clweb.form-util :as form-util]
    [clweb.util :as util]
    [com.rpl.specter :as s]
-   [clojure.test :refer :all]))
+   [clojure.test :refer :all]
+   [clweb.backend-state :as bes]))
 
 (deftest deep-merge-test
   (testing "a deep merge"
@@ -27,3 +28,14 @@
         m {"page" "test" "apa" "bepa"}]
     (is (= s (hash/hashify m)))
     (is (= m (hash/unhashify s)))))
+
+(deftest specter-subs
+  (testing "some specter"
+    (let [s (atom {})]
+      (bes/assoc-channel s "channel1")
+      (bes/add-subscription s "channel1" {:keypath [:apa]})
+      (is (= {:sessions {"channel1" {:subscriptions [{:keypath [:apa]}]}}} @s))
+      (bes/add-subscription s "channel1" {:keypath [:apa]})
+      (bes/delete-subscription s "channel1" [:apa])
+      (bes/delete-subscription s "channel1" [:apa])
+      (is (= {:sessions {"channel1" {:subscriptions []}}} @s)))))

@@ -14,7 +14,8 @@
 (defn log [arg]
   (js/console.log arg))
 
-(register-tag-parser! "object" (fn [arg] (prn-str arg)))
+(register-tag-parser! "object" prn-str)
+(register-tag-parser! "function" prn-str)
 
 (def ws-uri
   (let [location (-> js/window .-location)

@@ -25,16 +25,38 @@
                  #(= username (:username %))]
                 @state))
 
-(defn add-subscription [state channel]
-  (swap! state assoc-in [:sessions channel :subscriptions] true))
+(defn get-channel-user [state channel]
+  (get-in @state [:sessions channel :user]))
+
+(defn subscription [keypath target transformer]
+  {:keypath keypath :target target :transformer transformer})
+
+(defn add-subscription [state channel sub]
+  (swap! state (fn [s] (s/setval [:sessions
+                                  s/ALL
+                                  (s/selected? s/FIRST (s/pred= channel))
+                                  s/LAST
+                                  :subscriptions
+                                  s/NIL->VECTOR
+                                  s/END]
+                                 [sub] s))))
+
+(defn delete-subscription [state channel kp]
+  (swap! state (fn [s] (s/setval [:sessions
+                                  s/ALL
+                                  (s/selected? s/FIRST (s/pred= channel))
+                                  s/LAST
+                                  :subscriptions
+                                  (s/subselect [s/ALL (s/selected? :target (s/pred= kp))])
+                                  s/FIRST]
+                                 s/NONE s))))
 
 (defn get-subscriptions [state]
   (s/select [:sessions
              s/ALL
              (s/collect-one s/FIRST)
              s/LAST
-             :subscriptions
-             (s/pred= true)]
+             :subscriptions]
             state))
 
 (defn get-user-sessions [state uid]
