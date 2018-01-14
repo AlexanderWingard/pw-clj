@@ -48,6 +48,10 @@
     (on-close channel (fn [status] (bes/dissoc-channel state channel)))
     (on-receive channel (fn [s] (ws-on-message channel (edn/read-string s))))))
 
+(defn close-all-channels [state]
+  (doseq [c (bes/all-channels state)]
+    (org.httpkit.server/close c)))
+
 (defroutes my-routes
   (GET "/" [] (resource-response "index.html" {:root "public"}))
   (GET "/ws" [] ws-handler)

@@ -68,3 +68,6 @@
 
 (defn dissoc-channel [state channel]
   (swap! state update-in [:sessions] dissoc channel))
+
+(defn all-channels [ state ]
+  (s/select [:sessions s/ALL s/FIRST] @state))
