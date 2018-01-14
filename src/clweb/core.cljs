@@ -32,15 +32,16 @@
 (defn ws-on-message [ws-event]
   (swap! state util/deep-merge (reader/read-string (.-data ws-event))))
 (aset channel "onmessage" ws-on-message)
-(defn ws-open [] ())
+(defn ws-open []
+  (swap! state assoc :ws-state "open")
+  (reagent/render [main/render state channel]
+                  (js/document.getElementById "app")))
 (aset channel "onopen" ws-open)
+(aset channel "onclose" (fn [e] (swap! state assoc :ws-state "closed")))
 
 (defn hash-change []
  (swap! state assoc :hash (unhashify (aget js/window "location" "hash"))))
 (aset js/window "onhashchange" hash-change)
 (hash-change)
-
-(reagent/render [main/render state channel]
-                (js/document.getElementById "app"))
 
 (defn figwheel-reload [])

@@ -33,9 +33,9 @@
   (testing "some specter"
     (let [s (atom {})]
       (bes/assoc-channel s "channel1")
-      (bes/add-subscription s "channel1" {:keypath [:apa]})
-      (is (= {:sessions {"channel1" {:subscriptions [{:keypath [:apa]}]}}} @s))
-      (bes/add-subscription s "channel1" {:keypath [:apa]})
-      (bes/delete-subscription s "channel1" [:apa])
-      (bes/delete-subscription s "channel1" [:apa])
+      (bes/add-subscription s "channel1" :apa)
+      (is (= {:sessions {"channel1" {:subscriptions [:apa]}}} @s))
+      (bes/add-subscription s "channel1" :apa)
+      (bes/delete-subscription s "channel1" :apa)
+      (bes/delete-subscription s "channel1" :apa)
       (is (= {:sessions {"channel1" {:subscriptions []}}} @s)))))

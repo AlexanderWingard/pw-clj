@@ -12,4 +12,4 @@
      (if (nil? (:logged-in @state))
        [login/form state channel]
        [user-info/form state channel]))
-   [clj-view/form @state]])
+   [clj-view/form state channel]])
